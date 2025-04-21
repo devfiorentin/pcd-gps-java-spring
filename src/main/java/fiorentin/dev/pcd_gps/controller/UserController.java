@@ -4,11 +4,21 @@ import fiorentin.dev.pcd_gps.controller.dto.LocationDTO;
 import fiorentin.dev.pcd_gps.controller.dto.UserDTO;
 import fiorentin.dev.pcd_gps.entity.User;
 import fiorentin.dev.pcd_gps.repository.UserClassRepository;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+@AllArgsConstructor
+
+@Getter
+@Setter
 
 @CrossOrigin(origins = "http://localhost:5173/  ")
 @RestController
@@ -16,11 +26,10 @@ import java.util.Optional;
 
 public class UserController {
 
+
     private final UserClassRepository repository;
 
-    public UserController(UserClassRepository repository) {
-        this.repository = repository;
-    }
+
 
     // Rota de listar ususarios
     @GetMapping("/users")
@@ -32,13 +41,13 @@ public class UserController {
     // Rota de criar usuario
     @PostMapping("/new-user")
     public ResponseEntity<User> newUser(@RequestBody UserDTO body) {
-        repository.save(new User(body.firstName(), body.lastName(), body.age(), body.pcd(), body.carModel(), body.plate(), body.latitude(), body.longitude()));
+        repository.save(new User(body.firstName(), body.lastName(), body.age(), body.pcd()));
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/edit/{id}")
     public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserDTO body) {
-        User user = new User(body.firstName(), body.lastName(), body.age(), body.pcd(), body.carModel(), body.plate(), body.latitude(), body.longitude());
+        User user = new User(body.firstName(), body.lastName(), body.age(), body.pcd());
         user.setId(id);
         repository.save(user);
         return ResponseEntity.ok().build();
@@ -59,18 +68,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/location/{id}")
-    public ResponseEntity<User> updateLocation(@PathVariable Long id, @RequestBody LocationDTO body) {
-        Optional<User> userOptional = repository.findById(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setLatitude(body.latitude());
-            user.setLongitude(body.longitude());
-            repository.save(user);
-            return ResponseEntity.ok(user); // <-- agora retorna o objeto atualizado
-        }
-        return ResponseEntity.notFound().build(); // <-- melhor retornar 404 se não encontrar
-    }
+
 
 
 
